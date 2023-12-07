@@ -1,0 +1,210 @@
+package SoloLexico;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+    
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+}
+:};
+
+terminal Linea, Comillas, T_dato, Cadena, If, Else, Switch, Case, Break, Default, Return, Do, While, For, Int, Doble,
+    Float, Long, Char, Igual, Suma, Resta, Multiplicacion, Division, Op_logico, Op_relacional,
+    Op_atribucion, Op_incremento, Op_booleano, Parent_a, Parent_c, Continue, Goto, Union, Extern,Register, Enum,
+    Llave_a, Llave_c, Corchete_a, Corchete_c, Main, DosPuntos, P_coma, Punto, Coma, Printf,
+    Scanf, Cin, Cout, Const, Short, Unsigned, Struct, Typedef, Palabra_Reservada, Identificador,
+    Numero, ERROR;
+non terminal INICIO, SENTENCIA, DECLARACION, DECLARACION_FOR, IF, IF_ELSE,
+    WHILE, DO_WHILE, FOR, SENTENCIA_BOOLEANA, SENTENCIA_FOR, CASE, SWITCH_CASE, OPERACIONES_BASICAS, 
+    OPERACIONES, COUT, CIN, ARREGLO, ARREGLO_DEFINIDO, ESTRUCTURAS, LIBRERIAS;
+
+start with INICIO;
+
+INICIO ::= 
+    Op_relacional Palabra_Reservada Op_relacional Identificador Op_relacional |
+    Op_relacional Palabra_Reservada Op_relacional Identificador Punto Identificador Op_relacional |
+    Palabra_Reservada Palabra_Reservada Palabra_Reservada P_coma INICIO|
+    Op_relacional Palabra_Reservada Op_relacional Identificador Op_relacional INICIO |
+    Op_relacional Palabra_Reservada Op_relacional Identificador Punto Identificador Op_relacional INICIO |
+    Int Main Parent_a Parent_c Llave_a SENTENCIA Identificador Parent_a Comillas Identificador Comillas Parent_c P_coma Return Numero P_coma Llave_c |
+    Int Main Parent_a Parent_c Llave_a SENTENCIA Return Numero P_coma Llave_c |
+    Main Parent_a Parent_c Llave_a SENTENCIA Llave_c |
+    Int Main Parent_a Parent_c Llave_a Return Numero P_coma Llave_c  
+    //Int Main Parent_a Parent_c Llave_a SENTENCIA Palabra_Reservada Parent_a Comillas Palabra_Reservada Comillas Parent_c P_coma Return Numero P_coma Llave_c |
+  //  Int Main Parent_a Parent_c Llave_a  Identificador Parent_a Comillas Identificador Comillas Parent_c P_coma Return Numero P_coma Llave_c 
+;
+SENTENCIA ::= 
+    SENTENCIA DECLARACION |
+    DECLARACION |
+    SENTENCIA IF | 
+    IF |
+    SENTENCIA IF_ELSE |
+    IF_ELSE |
+    SENTENCIA WHILE |
+    WHILE |
+    SENTENCIA DO_WHILE |
+    DO_WHILE |
+    SENTENCIA FOR |
+    FOR |
+    SENTENCIA CASE |
+    CASE |
+    SWITCH_CASE |
+    SENTENCIA SWITCH_CASE |
+    SENTENCIA OPERACIONES_BASICAS |
+    OPERACIONES_BASICAS |
+    SENTENCIA OPERACIONES |
+    OPERACIONES |
+    COUT |
+    SENTENCIA COUT |
+    CIN |
+    SENTENCIA CIN |
+    ARREGLO_DEFINIDO |
+    SENTENCIA ARREGLO_DEFINIDO |
+    ARREGLO |
+    SENTENCIA ARREGLO |
+    ESTRUCTURAS |
+    SENTENCIA ESTRUCTURAS 
+;
+DECLARACION ::= 
+    //declaracion tipos de datos 
+    Doble Identificador P_coma |
+    Int Identificador P_coma |
+    Cadena Identificador P_coma |
+    Float Identificador P_coma |
+    Long Identificador P_coma |
+    Char Identificador P_coma |
+    Const DECLARACION |
+    Short Identificador P_coma |
+    
+    //declaracion y asignacion
+    Doble Identificador Igual Numero Punto Numero P_coma |
+    Int Identificador Igual Numero P_coma |
+    Cadena Identificador Igual Comillas Comillas P_coma |
+    Cadena Identificador Igual Comillas Identificador Comillas P_coma |
+    Float Identificador Igual Numero Punto Numero P_coma |
+    Long Identificador Igual Numero P_coma |
+    Char Identificador Igual  Comillas Comillas P_coma |
+    Short Identificador Igual Numero P_coma |
+
+    //Operadores atribucion 
+    Doble Identificador Op_atribucion Numero Punto Numero P_coma |
+    Float Identificador Op_atribucion Numero Punto Numero P_coma |
+    Int Identificador Op_atribucion Numero P_coma |
+    Short Identificador Op_atribucion Numero P_coma |
+    Long Identificador Op_atribucion Numero P_coma |
+    Identificador Op_atribucion Numero Punto Numero P_coma |
+    Identificador Op_atribucion Numero P_coma |
+    Cadena Identificador Op_atribucion Comillas Comillas P_coma |
+    Cadena Identificador Op_atribucion Comillas Identificador Comillas P_coma 
+
+    //Operadores de incremento 
+    Int Identificador Op_incremento P_coma | 
+    Identificador Op_incremento P_coma |
+    Continue P_coma |
+    
+    //Goto
+    Goto Identificador P_coma |
+    Identificador DosPuntos 
+    
+    //Register
+    Register Int Identificador P_coma |
+    Register Char Identificador P_coma |
+
+    //Unsigned
+    Unsigned DECLARACION |
+
+    //Typedef
+    Typedef DECLARACION |
+    
+    //Extern
+    Extern DECLARACION 
+    
+;
+IF ::= If Parent_a SENTENCIA_BOOLEANA Parent_c Llave_a SENTENCIA Llave_c
+;
+SENTENCIA_BOOLEANA ::= 
+    Op_booleano | 
+    Identificador Op_relacional Op_booleano |
+    Identificador Op_relacional Numero |
+    Identificador Op_relacional Identificador |
+    Identificador Op_relacional Comillas Comillas |
+    Identificador Op_relacional Comillas Identificador Comillas
+;
+IF_ELSE ::= If Parent_a SENTENCIA_BOOLEANA Parent_c Llave_a SENTENCIA Llave_c Else Llave_a SENTENCIA Llave_c
+;
+CASE ::= Case Comillas Identificador Comillas DosPuntos SENTENCIA Break P_coma |
+        Case Numero DosPuntos SENTENCIA Break P_coma 
+;
+SWITCH_CASE::= Switch Parent_a Identificador Parent_c Llave_a  SENTENCIA Default DosPuntos SENTENCIA Break P_coma Llave_c 
+; 
+WHILE ::= While Parent_a SENTENCIA_BOOLEANA Parent_c Llave_a SENTENCIA Llave_c
+;
+DO_WHILE ::= Do Llave_a SENTENCIA Llave_c While Parent_a SENTENCIA_BOOLEANA Parent_c P_coma
+;
+FOR ::= For Parent_a SENTENCIA_FOR Parent_c Llave_a SENTENCIA Llave_c
+;
+SENTENCIA_FOR ::=
+    Int Identificador Igual Numero P_coma SENTENCIA_BOOLEANA P_coma DECLARACION_FOR |
+    Identificador Igual Numero P_coma SENTENCIA_BOOLEANA P_coma DECLARACION_FOR
+;
+DECLARACION_FOR ::= 
+    Identificador Op_atribucion Numero |
+    Identificador Op_incremento | 
+    Op_incremento Identificador
+;
+OPERACIONES ::=
+    Int Identificador Igual Numero SENTENCIA P_coma  
+    
+;
+
+OPERACIONES_BASICAS ::=
+     Suma Numero |
+     Resta Numero |
+     Multiplicacion Numero |
+     Division Numero
+;
+//Salida por consola
+COUT ::= 
+    Printf Parent_a Identificador Parent_c P_coma |
+    Cout Op_relacional Identificador P_coma |
+    Cout Op_relacional Comillas Identificador Comillas P_coma |
+    Printf Parent_a Comillas Identificador Comillas Coma Identificador Parent_c P_coma |
+    Printf Parent_a Comillas Identificador Comillas Parent_c P_coma 
+;
+//Entrada por consola
+CIN ::= 
+    Cin Op_relacional Identificador P_coma |
+    Scanf Parent_a Comillas Identificador Comillas Coma Identificador Parent_c P_coma
+;
+
+ESTRUCTURAS ::=
+    Union Identificador Llave_a SENTENCIA Llave_c P_coma | 
+    Enum Identificador Llave_a SENTENCIA Llave_c P_coma |
+    Struct Identificador Llave_a SENTENCIA Llave_c P_coma |
+    Struct Llave_a SENTENCIA Llave_c Identificador P_coma 
+;
+
+ARREGLO::=
+    Int Identificador Corchete_a Numero Corchete_c P_coma |
+    Int Identificador Igual Llave_a  SENTENCIA Llave_c P_coma |
+    Doble Identificador Corchete_a Numero Corchete_c P_coma |
+    Doble Identificador Igual Llave_a  SENTENCIA Llave_c P_coma |
+    Short Identificador Corchete_a Numero Corchete_c P_coma |
+    Short Identificador Igual Llave_a  SENTENCIA Llave_c P_coma |
+    Float Identificador Corchete_a Numero Corchete_c P_coma |
+    Float Identificador Igual Llave_a  SENTENCIA Llave_c P_coma |
+    Long Identificador Corchete_a Numero Corchete_c P_coma |
+    Long Identificador Igual Llave_a  SENTENCIA Llave_c P_coma 
+;
+
+ARREGLO_DEFINIDO::=
+    Numero |
+    Coma Numero
+;
